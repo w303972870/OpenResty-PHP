@@ -65,7 +65,10 @@ ENV CONFIG " \
     --without-http_redis2_module \
     --without-mail_imap_module \
     --without-mail_pop3_module \
-    --without-mail_smtp_module"
+    --without-mail_smtp_module \
+    --add-module=/usr/src/openresty-$OPENRESTY_VERSION/bundle/ngx_cache_purge-2.3 \
+    --add-module=/usr/src/openresty-$OPENRESTY_VERSION/bundle/nginx_upstream_check_module-0.3.0 \
+    "
 
 RUN mkdir -p /data/php/conf/php-fpm.d/ && mkdir -p /data/php/tmp/ && mkdir -p /data/php/logs && \
     mkdir -p /data/nginx/logs /var/run/nginx/ /data/nginx/tmp//uwsgi /data/nginx/tmp//proxy /data/nginx/tmp//scgi /data/htdocs /data/supervisor/logs/ /data/supervisor/conf/ && apk update && \
@@ -74,8 +77,66 @@ RUN mkdir -p /data/php/conf/php-fpm.d/ && mkdir -p /data/php/tmp/ && mkdir -p /d
   echo "${TIMEZONE}" > /etc/timezone && \
       addgroup -S php \
     && adduser -D -S -h /var/cache/php -s /sbin/nologin -G php php && \
-  apk --update --repository=http://dl-4.alpinelinux.org/alpine/edge/testing add php7 php7-mysqli php7-fpm php7-pdo_mysql  php7-json php7-zlib  php7-intl php7-session php7-redis php7-memcached php7-bcmath php7-bz2 php7-ctype php7-curl  php7-dom php7-fileinfo  php7-ftp php7-gd php7-gettext  php7-iconv   php7-mbstring php7-mysqlnd  php7-openssl php7-pcntl   php7-pdo_sqlite  php7-posix   php7-shmop  php7-soap php7-sockets php7-sqlite3 php7-sysvsem php7-tokenizer php7-xml php7-xmlreader php7-xmlrpc php7-xmlwriter php7-zip php7-zlib php7-common php7-mcrypt php7-gmp php7-pdo php7-phar php7-exif  \
-  php7-xsl php7-opcache php7-dba php7-pear php7-sodium php7-imagick php7-enchant php7-ldap php7-mongodb php7-amqp php7-wddx php7-zmq  php7-event php7-yaml php7-embed && \
+  apk --update --repository=http://dl-4.alpinelinux.org/alpine/edge/testing add \
+      php7 \
+      php7-mysqli \
+      php7-fpm \
+      php7-pdo_mysql  \
+      php7-json \
+      php7-zlib \
+      php7-intl \
+      php7-session \
+      php7-redis \
+      php7-memcached \
+      php7-bcmath \
+      php7-bz2 \
+      php7-ctype \
+      php7-curl  \
+      php7-dom \
+      php7-fileinfo  \
+      php7-ftp \
+      php7-gd \
+      php7-gettext  \
+      php7-iconv   \
+      php7-mbstring \
+      php7-mysqlnd  \
+      php7-openssl \
+      php7-pcntl   \
+      php7-pdo_sqlite  \
+      php7-posix   \
+      php7-shmop  \
+      php7-soap \
+      php7-sockets \
+      php7-sqlite3 \
+      php7-sysvsem \
+      php7-tokenizer \
+      php7-xml \
+      php7-xmlreader \
+      php7-xmlrpc \
+      php7-xmlwriter \
+      php7-zip \
+      php7-zlib \
+      php7-common \
+      php7-mcrypt \
+      php7-gmp \
+      php7-pdo \
+      php7-phar \
+      php7-exif  \
+      php7-xsl \
+      php7-opcache \
+      php7-dba \
+      php7-pear \
+      php7-sodium \
+      php7-imagick \
+      php7-enchant \
+      php7-ldap \
+      php7-mongodb \
+      php7-amqp \
+      php7-wddx \
+      php7-zmq  \
+      php7-event \
+      php7-yaml \
+      php7-embed && \
 curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --filename=composer \ 
     && sed -i 's@;daemonize = yes@daemonize = no@g' /etc/php7/php-fpm.conf \ 
     && sed -i "s|upload_max_filesize =.*|upload_max_filesize = ${MAX_UPLOAD}|" /etc/php7/php.ini  \ 
@@ -98,14 +159,19 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && cp /etc/php7/php-fpm.conf /data/php/conf/ && cp /etc/php7/php-fpm.d/www.conf /data/php/conf/php-fpm.d/ \
     && cp /etc/php7/php.ini /data/php/conf/ &&  apk add --no-cache --virtual .build-deps \
         gcc g++ gd-dev geoip-dev libatomic_ops-dev \
-        openssl-dev perl-dev \
-        pcre-dev libxml2-dev libxslt-dev \
-        make libc-dev perl libpq postgresql-dev zlib-dev \
+        perl-dev \
+        pcre-dev libxml2-dev libxslt-dev wget \
+        make libc-dev perl libpq zlib-dev \
+    && apk del libressl-dev && apk add postgresql-dev \
     && curl "https://openresty.org/download/openresty-$OPENRESTY_VERSION.tar.gz" -o openresty-$OPENRESTY_VERSION.tar.gz \
     && mkdir -p /usr/src \
-    && tar -zxC /usr/src -f openresty-$OPENRESTY_VERSION.tar.gz \
+    && tar -zxf openresty-$OPENRESTY_VERSION.tar.gz -C /usr/src \
     && rm openresty-$OPENRESTY_VERSION.tar.gz \
     && cd /usr/src/openresty-$OPENRESTY_VERSION/ \
+    && curl "http://labs.frickle.com/files/ngx_cache_purge-2.3.tar.gz" -o /usr/src/openresty-$OPENRESTY_VERSION/bundle/ngx_cache_purge-2.3.tar.gz \
+    && wget https://github.com/yaoweibin/nginx_upstream_check_module/archive/v0.3.0.tar.gz -O  /usr/src/openresty-$OPENRESTY_VERSION/bundle/v0.3.0.tar.gz \
+    && tar -zxf /usr/src/openresty-$OPENRESTY_VERSION/bundle/ngx_cache_purge-2.3.tar.gz -C /usr/src/openresty-$OPENRESTY_VERSION/bundle/ \
+    && tar -zxf /usr/src/openresty-$OPENRESTY_VERSION/bundle/v0.3.0.tar.gz -C /usr/src/openresty-$OPENRESTY_VERSION/bundle/ \
     && ./configure $CONFIG \
     && make \
     && make install \
@@ -114,7 +180,6 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && mkdir -p /usr/share/nginx/html/ \
     && install -m644 html/index.html /usr/share/nginx/html/ \
     && install -m644 html/50x.html /usr/share/nginx/html/ \
-    && install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
     && strip /usr/sbin/nginx* \
     && runDeps="$( \
         scanelf --needed --nobanner /usr/sbin/nginx \
@@ -124,7 +189,12 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
             | sort -u \
     )" \
     && apk add --virtual .nginx-rundeps $runDeps supervisor \
-    && apk del .build-deps && apk del make wget curl gcc libc-dev openssl-dev pcre-dev zlib-dev linux-headers geoip-dev libxml2-dev libxslt-dev gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
+    && apk del .build-deps && apk del make wget curl gcc libc-dev pcre-dev zlib-dev linux-headers \
+        geoip-dev libatomic_ops-dev \
+        openssl-dev perl-dev \
+        pcre-dev libxml2-dev libxslt-dev \
+        make libc-dev perl libpq postgresql-dev zlib-dev \
+    geoip-dev libxml2-dev libxslt-dev gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
     && rm -rf /usr/src/tengine-$TENGINE_VERSION  \
     && apk add --no-cache gettext \
     \

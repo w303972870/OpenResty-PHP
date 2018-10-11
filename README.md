@@ -1,5 +1,7 @@
+## 这是PHP+openresty版，如果需要PHP+Tenginx请转到https://github.com/w303972870/Nginx-PHP.git
+
 ```
-docker pull w303972870/nginx-php
+docker pull w303972870/openresty-php
 ```
 
 ### PHP相关目录
@@ -31,7 +33,7 @@ docker pull w303972870/nginx-php
 
 ### 启动命令
 ```
-docker run -dit --net host -p 80:80 -p 443:443 -v /data/htdocs:/data/htdocs -v /data/nginx-php/nginx/:/data/nginx/ -v /data/nginx-php/php/:/data/php/ docker.io/w303972870/nginx-php
+docker run -dit --net host -p 80:80 -p 443:443 -v /data/htdocs:/data/htdocs -v /data/nginx-php/nginx/:/data/nginx/ -v /data/nginx-php/php/:/data/php/ docker.io/w303972870/openresty-php
 ```
 
 
