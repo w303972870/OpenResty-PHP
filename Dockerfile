@@ -14,7 +14,7 @@ ENV OPENRESTY_VERSION 1.13.6.2
 
 ENV CONFIG " \
     --prefix=/usr/local/nginx/ \
-    --sbin-path=/usr/local/nginx/sbin/ \
+    --sbin-path=/usr/local/nginx/sbin/nginx \
     --conf-path=/data/nginx/conf/nginx.conf \
     --error-log-path=/data/nginx/logs/error.log \
     --http-log-path=/data/nginx/logs/access.log \
@@ -175,14 +175,10 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && ./configure $CONFIG \
     && make \
     && make install \
-    && rm -rf /etc/nginx/html/ \
     && mkdir /data/nginx/conf/conf.d/ \
-    && mkdir -p /usr/share/nginx/html/ \
-    && install -m644 html/index.html /usr/share/nginx/html/ \
-    && install -m644 html/50x.html /usr/share/nginx/html/ \
-    && strip /usr/sbin/nginx* \
+    && strip /usr/local/nginx/sbin/nginx* \
     && runDeps="$( \
-        scanelf --needed --nobanner /usr/sbin/nginx \
+        scanelf --needed --nobanner /usr/local/nginx/sbin/nginx \
             | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
             | sort -u \
             | xargs -r apk info --installed \
@@ -195,7 +191,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
         pcre-dev libxml2-dev libxslt-dev \
         make libc-dev perl libpq postgresql-dev zlib-dev \
     geoip-dev libxml2-dev libxslt-dev gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
-    && rm -rf /usr/src/tengine-$TENGINE_VERSION  \
+    && rm -rf /usr/src  \
     && apk add --no-cache gettext \
     \
     # forward request and error logs to docker log collector
