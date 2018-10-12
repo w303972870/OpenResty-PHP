@@ -185,12 +185,12 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
             | sort -u \
     )" \
     && apk add --virtual .nginx-rundeps $runDeps supervisor \
-    && apk del .build-deps && apk del make wget curl gcc libc-dev pcre-dev zlib-dev linux-headers \
+    && apk del .build-deps && apk del wget curl gcc linux-headers \
         geoip-dev libatomic_ops-dev \
         openssl-dev perl-dev \
         pcre-dev libxml2-dev libxslt-dev \
         make libc-dev perl libpq postgresql-dev zlib-dev \
-    geoip-dev libxml2-dev libxslt-dev gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
+       gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
     && rm -rf /usr/src  \
     && apk add --no-cache gettext \
     \
