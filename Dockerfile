@@ -184,7 +184,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && cp -R /usr/src/jieba/phpjieba/cjieba/dict/* /data/jieba/dict \
     && cd /usr/src/ && wget http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 -O ./scws-1.2.3.tar.bz2 \
     && tar jxf scws-1.2.3.tar.bz2 && cd scws-1.2.3 && ./configure --sysconfdir=/data/scws/etc \
-    && make && make install && cd phpext && phpize && ./configure --with-scws=/usr/local/scws \
+    && make && make install && cd phpext && phpize && ./configure \
     && make && make install \
     && mkdir /data/nginx/conf/conf.d/ \
     && strip /usr/local/nginx/sbin/nginx* \
@@ -199,7 +199,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && apk del .build-deps && apk del wget curl gcc linux-headers \
         geoip-dev libatomic_ops-dev \
         openssl-dev perl-dev git \
-        pcre-dev libxml2-dev libxslt-dev \
+        pcre-dev libxml2-dev libxslt-dev php7-dev \
         make libc-dev perl libpq postgresql-dev zlib-dev g++ wget \
        gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
     && rm -rf /usr/src  \
