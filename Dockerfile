@@ -71,8 +71,9 @@ ENV CONFIG " \
     "
 
 RUN mkdir -p /data/php/conf/php-fpm.d/ && mkdir -p /data/php/tmp/ && mkdir -p /data/php/logs && \
+    && echo 'ls -l $1' > /usr/bin/ll \
     mkdir -p /data/nginx/logs /var/run/nginx/ /data/nginx/tmp//uwsgi /data/nginx/tmp//proxy /data/nginx/tmp//scgi /data/htdocs /data/supervisor/logs/ /data/supervisor/conf/ && apk update && \
-  apk add tzdata curl && \
+  apk add tzdata curl git && \
   cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
   echo "${TIMEZONE}" > /etc/timezone && \
       addgroup -S php \
@@ -132,6 +133,7 @@ RUN mkdir -p /data/php/conf/php-fpm.d/ && mkdir -p /data/php/tmp/ && mkdir -p /d
       php7-ldap \
       php7-mongodb \
       php7-amqp \
+      php7-dev \
       php7-wddx \
       php7-zmq  \
       php7-event \
@@ -175,6 +177,15 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && ./configure $CONFIG \
     && make \
     && make install \
+    && mkdir /usr/src/jieba/ && cd /usr/src/jieba/ \
+    && git clone https://github.com/jonnywang/phpjieba.git \
+    && cd phpjieba/cjieba && make && cd .. \
+    && phpize && ./configure && make && make install && mkdir /data/jieba/dict -p \
+    && cp -R /usr/src/jieba/phpjieba/cjieba/dict/* /data/jieba/dict \
+    && cd /usr/src/ && wget http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 \
+    && tar jxf scws-1.2.3.tar.bz2 && cd scws-1.2.3 && ./configure --sysconfdir=/data/scws/etc \
+    && make && make install && cd phpext && phpize && ./configure --with-scws=/usr/local/scws \
+    && make && make install \
     && mkdir /data/nginx/conf/conf.d/ \
     && strip /usr/local/nginx/sbin/nginx* \
     && runDeps="$( \
@@ -187,9 +198,9 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && apk add --virtual .nginx-rundeps $runDeps supervisor \
     && apk del .build-deps && apk del wget curl gcc linux-headers \
         geoip-dev libatomic_ops-dev \
-        openssl-dev perl-dev \
+        openssl-dev perl-dev git \
         pcre-dev libxml2-dev libxslt-dev \
-        make libc-dev perl libpq postgresql-dev zlib-dev \
+        make libc-dev perl libpq postgresql-dev zlib-dev g++ wget \
        gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
     && rm -rf /usr/src  \
     && apk add --no-cache gettext \

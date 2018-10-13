@@ -24,6 +24,9 @@ docker pull w303972870/openresty-php
 #### scgi_temp目录：/data/nginx/tmp/scgi_temp
 #### uwsgi_temp目录：/data/nginx/tmp/uwsgi_temp
 
+### 其他
+### /data/jieba/dict/目录放置了jieba分词的示例词典文件等文件，so文件/usr/lib/php7/modules/jieba.so，默认未启用，自行修改php.ini
+### /data/scws/etc/目录放置了scws分词词典和规则配置等文件，so文件/usr/lib/php7/modules/scws.so，默认未启用，自行修改php.ini
 
 
 ```
