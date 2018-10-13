@@ -162,7 +162,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && cp /etc/php7/php.ini /data/php/conf/ &&  apk add --no-cache --virtual .build-deps \
         gcc g++ gd-dev geoip-dev libatomic_ops-dev \
         perl-dev \
-        pcre-dev libxml2-dev libxslt-dev wget make cmake \
+        pcre-dev libxml2-dev libxslt-dev wget make cmake re2c \
         make libc-dev perl libpq zlib-dev \
     && apk del libressl-dev && apk add postgresql-dev \
     && curl "https://openresty.org/download/openresty-$OPENRESTY_VERSION.tar.gz" -o openresty-$OPENRESTY_VERSION.tar.gz \
