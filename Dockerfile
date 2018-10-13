@@ -182,7 +182,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && cd phpjieba/cjieba && make && cd .. \
     && phpize && ./configure && make && make install && mkdir /data/jieba/dict -p \
     && cp -R /usr/src/jieba/phpjieba/cjieba/dict/* /data/jieba/dict \
-    && cd /usr/src/ && wget http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 \
+    && cd /usr/src/ && wget http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 -O ./scws-1.2.3.tar.bz2 \
     && tar jxf scws-1.2.3.tar.bz2 && cd scws-1.2.3 && ./configure --sysconfdir=/data/scws/etc \
     && make && make install && cd phpext && phpize && ./configure --with-scws=/usr/local/scws \
     && make && make install \
