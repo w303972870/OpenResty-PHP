@@ -68,10 +68,11 @@ ENV CONFIG " \
     --without-mail_smtp_module \
     --add-module=/usr/src/openresty-$OPENRESTY_VERSION/bundle/ngx_cache_purge-2.3 \
     --add-module=/usr/src/openresty-$OPENRESTY_VERSION/bundle/nginx_upstream_check_module-0.3.0 \
+    --add-module=/usr/src/openresty-$OPENRESTY_VERSION/bundle/ngx_http_cppjieba_module/src \
     "
 
 RUN mkdir -p /data/php/conf/php-fpm.d/ && mkdir -p /data/php/tmp/ && mkdir -p /data/php/logs \
-    && echo 'ls -l $1' > /usr/bin/ll \
+    && echo 'ls -l $1' > /usr/bin/ll && chmod +x /usr/bin/ll \
     && mkdir -p /data/nginx/logs /var/run/nginx/ /data/nginx/tmp//uwsgi /data/nginx/tmp//proxy /data/nginx/tmp//scgi /data/htdocs /data/supervisor/logs/ /data/supervisor/conf/ && apk update && \
   apk add tzdata curl git && \
   cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
@@ -172,6 +173,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && cd /usr/src/openresty-$OPENRESTY_VERSION/ \
     && curl "http://labs.frickle.com/files/ngx_cache_purge-2.3.tar.gz" -o /usr/src/openresty-$OPENRESTY_VERSION/bundle/ngx_cache_purge-2.3.tar.gz \
     && wget https://github.com/yaoweibin/nginx_upstream_check_module/archive/v0.3.0.tar.gz -O  /usr/src/openresty-$OPENRESTY_VERSION/bundle/v0.3.0.tar.gz \
+    && git clone git://github.com/aszxqw/ngx_http_cppjieba_module.git /usr/src/openresty-$OPENRESTY_VERSION/bundle/ngx_http_cppjieba_module/  \
     && tar -zxf /usr/src/openresty-$OPENRESTY_VERSION/bundle/ngx_cache_purge-2.3.tar.gz -C /usr/src/openresty-$OPENRESTY_VERSION/bundle/ \
     && tar -zxf /usr/src/openresty-$OPENRESTY_VERSION/bundle/v0.3.0.tar.gz -C /usr/src/openresty-$OPENRESTY_VERSION/bundle/ \
     && ./configure $CONFIG \
